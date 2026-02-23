@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(cd E:/Proyectos/FinancialApp && npm run build 2>&1)"
-    ]
-  }
-}
