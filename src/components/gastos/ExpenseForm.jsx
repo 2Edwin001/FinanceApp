@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { CATEGORY_NAMES } from '../../data/categories'
+import { fmtInput, digitsOnly } from '../../utils/format'
 
 function getTodayStr() {
   const d = new Date()
@@ -19,7 +20,7 @@ export default function ExpenseForm({ onAdd }) {
 
   function handleSubmit(e) {
     e.preventDefault()
-    const n = parseFloat(amount)
+    const n = Number(amount)
     if (!amount || isNaN(n) || n <= 0) {
       setError('Ingresa un monto válido mayor a 0.')
       return
@@ -42,11 +43,10 @@ export default function ExpenseForm({ onAdd }) {
           <div className="flex items-center bg-slate-900 border border-slate-700 rounded-lg overflow-hidden focus-within:border-indigo-500 transition-colors">
             <span className="px-3 text-slate-400 text-sm select-none">$</span>
             <input
-              type="number"
-              min="1"
-              step="1"
-              value={amount}
-              onChange={e => setAmount(e.target.value)}
+              type="text"
+              inputMode="numeric"
+              value={fmtInput(amount)}
+              onChange={e => setAmount(digitsOnly(e.target.value))}
               placeholder="0"
               className="flex-1 bg-transparent py-2 pr-3 text-white text-sm outline-none placeholder:text-slate-600"
             />

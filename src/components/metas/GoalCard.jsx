@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Trash2, Check, X } from 'lucide-react'
-import { formatCurrency } from '../../utils/format'
+import { formatCurrency, fmtInput, digitsOnly } from '../../utils/format'
 
 function barColor(pct) {
   if (pct >= 100) return 'bg-emerald-400'
@@ -29,7 +29,7 @@ export default function GoalCard({ goal, onDelete, onContribute }) {
   const daysLeft = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24))
 
   function handleContribute() {
-    const n = parseFloat(contribAmount)
+    const n = Number(contribAmount)
     if (isNaN(n) || n <= 0) return
     onContribute(goal.id, n)
     setContribAmount('')
@@ -124,11 +124,10 @@ export default function GoalCard({ goal, onDelete, onContribute }) {
               <div className="flex-1 flex items-center bg-slate-900 border border-indigo-500 rounded-lg overflow-hidden">
                 <span className="px-2 text-slate-400 text-sm select-none">$</span>
                 <input
-                  type="number"
-                  min="1"
-                  step="1000"
-                  value={contribAmount}
-                  onChange={e => setContribAmount(e.target.value)}
+                  type="text"
+                  inputMode="numeric"
+                  value={fmtInput(contribAmount)}
+                  onChange={e => setContribAmount(digitsOnly(e.target.value))}
                   onKeyDown={e => {
                     if (e.key === 'Enter') handleContribute()
                     if (e.key === 'Escape') cancelContrib()

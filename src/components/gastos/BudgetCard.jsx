@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Check, X, Pencil } from 'lucide-react'
 import { CATEGORY_MAP } from '../../data/categories'
-import { formatCurrency } from '../../utils/format'
+import { formatCurrency, fmtInput, digitsOnly } from '../../utils/format'
 
 function barColor(pct) {
   if (pct < 70) return 'bg-emerald-500'
@@ -12,7 +12,7 @@ function barColor(pct) {
 export default function BudgetCard({ category, spent, limit, percentage, onUpdateLimit }) {
   const [mounted, setMounted] = useState(false)
   const [editing, setEditing] = useState(false)
-  const [inputVal, setInputVal] = useState(String(limit))
+  const [inputVal, setInputVal] = useState(String(Math.round(limit)))
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 50)
@@ -20,7 +20,7 @@ export default function BudgetCard({ category, spent, limit, percentage, onUpdat
   }, [])
 
   useEffect(() => {
-    setInputVal(String(limit))
+    setInputVal(String(Math.round(limit)))
   }, [limit])
 
   const catData = CATEGORY_MAP[category]
@@ -28,7 +28,7 @@ export default function BudgetCard({ category, spent, limit, percentage, onUpdat
   const color = catData?.color
 
   function handleSave() {
-    const n = parseFloat(inputVal)
+    const n = Number(inputVal)
     if (!isNaN(n) && n >= 0) {
       onUpdateLimit(category, n)
     }
@@ -63,14 +63,13 @@ export default function BudgetCard({ category, spent, limit, percentage, onUpdat
         ) : (
           <div className="flex items-center gap-1">
             <input
-              type="number"
-              min="0"
-              step="1000"
-              value={inputVal}
-              onChange={e => setInputVal(e.target.value)}
+              type="text"
+              inputMode="numeric"
+              value={fmtInput(inputVal)}
+              onChange={e => setInputVal(digitsOnly(e.target.value))}
               onKeyDown={handleKeyDown}
               autoFocus
-              className="w-24 bg-slate-900 border border-indigo-500 rounded px-2 py-0.5 text-white text-xs outline-none"
+              className="w-28 bg-slate-900 border border-indigo-500 rounded px-2 py-0.5 text-white text-xs outline-none"
             />
             <button onClick={handleSave} className="text-emerald-400 hover:text-emerald-300">
               <Check size={14} />

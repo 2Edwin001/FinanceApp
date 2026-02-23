@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
+import { fmtInput, digitsOnly } from '../../utils/format'
 
 function getTodayStr() {
   const d = new Date()
@@ -16,7 +17,7 @@ export default function GoalForm({ onAdd }) {
   function validate() {
     const errs = {}
     if (!name.trim()) errs.name = 'El nombre es requerido.'
-    const n = parseFloat(target)
+    const n = Number(target)
     if (!target || isNaN(n) || n <= 0) errs.target = 'Ingresa un monto válido mayor a 0.'
     if (!deadline) {
       errs.deadline = 'La fecha límite es requerida.'
@@ -40,7 +41,7 @@ export default function GoalForm({ onAdd }) {
     onAdd({
       name: name.trim(),
       emoji: emoji.trim() || '🎯',
-      target: parseFloat(target),
+      target: Number(target),
       deadline,
     })
     setName('')
@@ -90,11 +91,10 @@ export default function GoalForm({ onAdd }) {
           <div className="flex items-center bg-slate-900 border border-slate-700 rounded-lg overflow-hidden focus-within:border-indigo-500 transition-colors">
             <span className="px-3 text-slate-400 text-sm select-none">$</span>
             <input
-              type="number"
-              min="1"
-              step="any"
-              value={target}
-              onChange={e => setTarget(e.target.value)}
+              type="text"
+              inputMode="numeric"
+              value={fmtInput(target)}
+              onChange={e => setTarget(digitsOnly(e.target.value))}
               placeholder="0"
               className="flex-1 bg-transparent py-2 pr-3 text-white text-sm outline-none placeholder:text-slate-600"
             />
