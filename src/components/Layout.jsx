@@ -33,17 +33,17 @@ export default function Layout() {
       {/* Main content — offset para dejar espacio al sidebar en desktop */}
       <div className="flex-1 lg:ml-60 flex flex-col min-w-0">
         {/* Top header */}
-        <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800/60 px-6 py-4 lg:px-8">
-          <div className="flex items-center justify-between">
-            <span className="ml-10 lg:ml-0 text-white font-semibold text-lg">{pageLabel}</span>
-            <span className="text-slate-400 text-sm capitalize">
+        <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur border-b border-slate-800/60 px-4 py-3 lg:px-8 lg:py-4">
+          <div className="flex items-center justify-between gap-3">
+            <span className="ml-10 lg:ml-0 text-white font-semibold text-base lg:text-lg truncate min-w-0">{pageLabel}</span>
+            <span className="text-slate-400 text-xs sm:text-sm capitalize flex-shrink-0">
               {new Date().toLocaleDateString('es-CO', { month: 'long', year: 'numeric' })}
             </span>
           </div>
         </header>
 
         {/* Contenido de la página */}
-        <main className="flex-1 p-6 lg:p-8">
+        <main className="flex-1 p-4 lg:p-8">
           <Outlet />
         </main>
       </div>

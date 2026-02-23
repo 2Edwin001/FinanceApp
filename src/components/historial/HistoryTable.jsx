@@ -48,7 +48,7 @@ function HistoryRow({ tx, onDelete }) {
         {!confirmDelete ? (
           <button
             onClick={() => setConfirmDelete(true)}
-            className="text-slate-600 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+            className="text-slate-600 hover:text-red-400 transition-colors sm:opacity-0 sm:group-hover:opacity-100"
             title="Eliminar"
           >
             <Trash2 size={14} />
