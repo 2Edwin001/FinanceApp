@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronUp, ChevronDown, ChevronsUpDown, Trash2 } from 'lucide-react'
+import { ChevronUp, ChevronDown, ChevronsUpDown, Trash2, TrendingUp } from 'lucide-react'
 import { CATEGORY_MAP } from '../../data/categories'
 import { formatCurrency, formatDate } from '../../utils/format'
 
@@ -14,16 +14,20 @@ function SortIcon({ column, sortConfig }) {
 
 function HistoryRow({ tx, onDelete }) {
   const [confirmDelete, setConfirmDelete] = useState(false)
-  const catData = CATEGORY_MAP[tx.category]
-  const Icon = catData?.icon
-  const color = catData?.color
+
+  const isIncome = !!tx.isIncome
+  const catData  = isIncome ? null : CATEGORY_MAP[tx.category]
+  const Icon     = isIncome ? TrendingUp : catData?.icon
+  const color    = isIncome
+    ? { bg: 'bg-emerald-500/20', border: 'border-emerald-500/30', text: 'text-emerald-400' }
+    : catData?.color
 
   return (
     <tr className="border-b border-slate-700/40 hover:bg-slate-700/20 transition-colors group">
-      {/* Categoría */}
+      {/* Categoría / Tipo */}
       <td className="py-3 px-4">
         <div className="flex items-center gap-2">
-          {Icon && (
+          {Icon && color && (
             <div className={`w-7 h-7 rounded-lg ${color.bg} ${color.border} border flex items-center justify-center flex-shrink-0`}>
               <Icon size={13} className={color.text} />
             </div>
@@ -31,7 +35,7 @@ function HistoryRow({ tx, onDelete }) {
           <span className="text-sm text-slate-300 whitespace-nowrap">{tx.category}</span>
         </div>
       </td>
-      {/* Nota */}
+      {/* Nota / Descripción */}
       <td className="py-3 px-4 max-w-[200px]">
         <span className="text-sm text-white truncate block">{tx.note || '—'}</span>
       </td>
@@ -41,7 +45,9 @@ function HistoryRow({ tx, onDelete }) {
       </td>
       {/* Monto */}
       <td className="py-3 px-4 text-right whitespace-nowrap">
-        <span className="text-sm font-medium text-red-400">{formatCurrency(tx.amount)}</span>
+        <span className={`text-sm font-medium ${isIncome ? 'text-emerald-400' : 'text-red-400'}`}>
+          {isIncome ? '+' : ''}{formatCurrency(tx.amount)}
+        </span>
       </td>
       {/* Acciones */}
       <td className="py-3 px-4 text-right">

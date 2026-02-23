@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useTransactions } from '../hooks/useTransactions'
+import { useIncomes, INCOME_TYPE_MAP } from '../hooks/useIncomes'
 import { useToast } from '../context/ToastContext'
 import HistoryFilters from '../components/historial/HistoryFilters'
 import HistoryTable from '../components/historial/HistoryTable'
@@ -22,37 +23,51 @@ const MONTHS = getLast12Months()
 
 export default function HistoryView() {
   const { transactions, deleteTransaction } = useTransactions()
-  const { addToast } = useToast()
+  const { incomes, deleteIncome }           = useIncomes()
+  const { addToast }                        = useToast()
 
-  const [selectedMonth, setSelectedMonth] = useState(MONTHS[0].value)
+  const [viewType, setViewType]               = useState('expenses')
+  const [selectedMonth, setSelectedMonth]     = useState(MONTHS[0].value)
   const [selectedCategory, setSelectedCategory] = useState('Todas')
-  const [searchText, setSearchText] = useState('')
-  const [sortConfig, setSortConfig] = useState({ column: 'date', direction: 'desc' })
+  const [searchText, setSearchText]           = useState('')
+  const [sortConfig, setSortConfig]           = useState({ column: 'date', direction: 'desc' })
+
+  // Normalizar ingresos al mismo formato que transacciones para reutilizar la tabla
+  const normalizedIncomes = useMemo(() =>
+    incomes.map(i => ({
+      ...i,
+      category: INCOME_TYPE_MAP[i.type]?.label ?? 'Ingreso',
+      note: i.description,
+      isIncome: true,
+    })),
+  [incomes])
+
+  const sourceData = viewType === 'expenses' ? transactions : normalizedIncomes
 
   const filtered = useMemo(() => {
-    let result = [...transactions]
+    let result = [...sourceData]
 
     // Filtrar por mes
     if (selectedMonth !== 'all') {
       const [year, month] = selectedMonth.split('-').map(Number)
-      result = result.filter(tx => {
-        const d = new Date(tx.date + 'T12:00:00')
+      result = result.filter(item => {
+        const d = new Date(item.date + 'T12:00:00')
         return d.getFullYear() === year && d.getMonth() + 1 === month
       })
     }
 
-    // Filtrar por categoría
+    // Filtrar por categoría / tipo
     if (selectedCategory !== 'Todas') {
-      result = result.filter(tx => tx.category === selectedCategory)
+      result = result.filter(item => item.category === selectedCategory)
     }
 
     // Filtrar por texto
     if (searchText.trim()) {
       const q = searchText.toLowerCase()
       result = result.filter(
-        tx =>
-          tx.note.toLowerCase().includes(q) ||
-          tx.category.toLowerCase().includes(q)
+        item =>
+          (item.note ?? '').toLowerCase().includes(q) ||
+          item.category.toLowerCase().includes(q)
       )
     }
 
@@ -72,7 +87,7 @@ export default function HistoryView() {
     })
 
     return result
-  }, [transactions, selectedMonth, selectedCategory, searchText, sortConfig])
+  }, [sourceData, selectedMonth, selectedCategory, searchText, sortConfig])
 
   function handleSort(column) {
     setSortConfig(prev =>
@@ -83,28 +98,41 @@ export default function HistoryView() {
   }
 
   function handleDelete(id) {
-    deleteTransaction(id)
-    addToast({ message: 'Transacción eliminada', type: 'danger' })
+    if (viewType === 'expenses') {
+      deleteTransaction(id)
+      addToast({ message: 'Transacción eliminada', type: 'danger' })
+    } else {
+      deleteIncome(id)
+      addToast({ message: 'Ingreso eliminado', type: 'danger' })
+    }
+  }
+
+  // Al cambiar de vista, resetear filtro de categoría
+  function handleViewTypeChange(type) {
+    setViewType(type)
+    setSelectedCategory('Todas')
   }
 
   function handleExport() {
-    const filename =
-      selectedMonth === 'all'
-        ? 'historial-financeapp-todo.csv'
-        : `historial-financeapp-${selectedMonth}.csv`
+    const prefix    = viewType === 'expenses' ? 'gastos' : 'ingresos'
+    const filename  = selectedMonth === 'all'
+      ? `${prefix}-financeapp-todo.csv`
+      : `${prefix}-financeapp-${selectedMonth}.csv`
     exportToCSV(filtered, filename)
   }
 
-  const total = filtered.reduce((sum, tx) => sum + tx.amount, 0)
+  const total = filtered.reduce((sum, item) => sum + item.amount, 0)
 
   return (
     <div className="space-y-4">
       <div>
         <h1 className="text-xl font-bold text-white">Historial</h1>
-        <p className="text-slate-400 text-sm mt-0.5">Registro completo de transacciones</p>
+        <p className="text-slate-400 text-sm mt-0.5">Registro completo de movimientos</p>
       </div>
 
       <HistoryFilters
+        viewType={viewType}
+        onViewTypeChange={handleViewTypeChange}
         months={MONTHS}
         selectedMonth={selectedMonth}
         onMonthChange={setSelectedMonth}

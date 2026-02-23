@@ -5,6 +5,7 @@ import Sidebar from './Sidebar'
 const PAGE_TITLES = {
   '/':          'Dashboard · FinanceApp',
   '/gastos':    'Gastos · FinanceApp',
+  '/ingresos':  'Ingresos · FinanceApp',
   '/metas':     'Metas · FinanceApp',
   '/historial': 'Historial · FinanceApp',
 }
@@ -12,6 +13,7 @@ const PAGE_TITLES = {
 const PAGE_LABELS = {
   '/':          'Dashboard',
   '/gastos':    'Gastos & Presupuesto',
+  '/ingresos':  'Ingresos',
   '/metas':     'Metas de Ahorro',
   '/historial': 'Historial',
 }

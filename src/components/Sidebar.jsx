@@ -11,9 +11,10 @@ import {
 import { useState } from 'react'
 
 const navItems = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/gastos', label: 'Gastos', icon: Wallet },
-  { to: '/metas', label: 'Metas', icon: Target },
+  { to: '/',          label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/gastos',    label: 'Gastos',    icon: Wallet },
+  { to: '/ingresos',  label: 'Ingresos',  icon: TrendingUp },
+  { to: '/metas',     label: 'Metas',     icon: Target },
   { to: '/historial', label: 'Historial', icon: History },
 ]
 
