@@ -34,7 +34,7 @@ Aplicación web de finanzas personales construida con React + Vite. Permite regi
 ### Historial
 - Filtros combinados: mes (últimos 12), categoría, búsqueda por texto
 - Tabla ordenable por Categoría, Fecha y Monto (clic en columna para alternar)
-- Ícono de eliminación visible al hover, confirmación inline por fila
+- Ícono de eliminación siempre visible en mobile, visible al hover en desktop; confirmación inline por fila
 - Resumen al pie: total del período, categoría con mayor gasto, promedio por transacción
 - **Exportación a CSV** respetando los filtros activos, compatible con Excel (BOM UTF-8)
 
@@ -43,6 +43,7 @@ Aplicación web de finanzas personales construida con React + Vite. Permite regi
   - ✅ Verde: gasto agregado, aportación registrada, meta creada
   - 🗑️ Rojo suave: transacción eliminada, meta eliminada
 - Sidebar responsive: drawer en mobile, fijo en desktop
+- Inputs de montos con separadores de miles en tiempo real (ej: `100.000` en vez de `100000`)
 - Título del tab dinámico por vista: `Dashboard · FinanceApp`, `Gastos · FinanceApp`, etc.
 - Favicon 💰 como SVG emoji inline
 - Scroll suave global
@@ -85,9 +86,9 @@ npm run build
 npm run preview
 ```
 
-Al abrir la app por primera vez se cargan datos de ejemplo (seed data) con transacciones en COP de los últimos 3 meses, listos para explorar todas las funcionalidades sin ingresar datos manualmente.
+Al abrir la app por primera vez se inicializan los presupuestos por defecto por categoría. Las transacciones y metas empiezan vacías, listas para que el usuario ingrese sus propios datos.
 
-> Para resetear los datos de ejemplo, abre DevTools → Application → Local Storage → elimina las claves `transactions`, `budgets`, `goals` y `_dataVersion`, luego recarga la página.
+> Para resetear todos los datos, abre DevTools → Application → Local Storage → elimina las claves `transactions`, `budgets`, `goals` y `_dataVersion`, luego recarga la página.
 
 ---
 
@@ -113,7 +114,7 @@ src/
 │   └── useGoals.js                  # CRUD de metas + addContribution()
 │
 ├── utils/
-│   ├── format.js                    # formatCurrency (COP / es-CO) + formatDate
+│   ├── format.js                    # formatCurrency (COP / es-CO) · formatDate · fmtInput · digitsOnly
 │   └── csvExport.js                 # Exportador CSV con BOM UTF-8
 │
 ├── components/
